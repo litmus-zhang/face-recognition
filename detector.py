@@ -85,12 +85,20 @@ def recognize_faces(
     model: str = "hog",
     encodings_location: Path = DEFAULT_ENCODINGS_PATH,
 ) -> None:
+    input_image = face_recognition.load_image_file(image_location)
+    input_face_locations = face_recognition.face_locations(
+        input_image, model=model
+    )
+    input_face_encodings = face_recognition.face_encodings(
+        input_image, input_face_locations
+    )
+
     with encodings_location.open(mode="rb") as f:
         loaded_encodings = pickle.load(f)
     pillow_image = Image.fromarray(input_image)
 
     draw = ImageDraw.Draw(pillow_image)
-    # input_image = face_recognition.load_image_file(image_location)
+
     for bounding_box, unknown_encoding in zip(
         input_face_locations, input_face_encodings
     ):
@@ -163,5 +171,3 @@ if __name__ == "__main__":
         validate(model=args.m)
     if args.test:
         recognize_faces(image_location=args.f, model=args.m)
-
-x
